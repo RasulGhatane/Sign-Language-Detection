@@ -1,0 +1,55 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speak Up!</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Speak Up!</h1>
+            <p class="text-gray-600 mt-2">Let Your Hands Speak!</p>
+        </header>
+
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+            <div class="relative">
+                <img src="{{ url_for('video_feed') }}" 
+                     class="w-full rounded-lg shadow-md" 
+                     alt="Video Feed">
+            </div>
+
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Current Classification</h2>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-600">Class: <span id="className" class="font-medium text-gray-800">Loading...</span></p>
+                        <p class="text-gray-600">Confidence: <span id="confidence" class="font-medium text-gray-800">Loading...</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updatePrediction() {
+            fetch('/get_prediction')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+                    document.getElementById('className').textContent = data.class;
+                    document.getElementById('confidence').textContent = data.confidence;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update prediction every second
+        setInterval(updatePrediction, 1000);
+    </script>
+</body>
+</html>
